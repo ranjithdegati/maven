@@ -1,0 +1,14 @@
+sudo easy_install pip 
+
+pip install ansible
+
+yum install ansible
+
+sudo amazon-linux-extras install ansible2
+
+
+use this one 
+
+vim /etc/yum.repos.d/epel.repo
+or
+sudo yum-config-manager --enable epel

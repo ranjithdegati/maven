@@ -1,0 +1,96 @@
+Parameters:
+  NameOfService:
+    Description: The will be out tag name associated with the EC2 instances.
+    Type: String
+  KeyName:
+    Description: Name of an EC2 KeyPair to enable SSH access into the server.
+    Type: AWS::EC2::KeyPair::KeyName
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-0ff8a91507f77f867
+    us-east-2:
+      AMI: ami-0b59bfac6be064b78
+    ap-south-1:
+      AMI: ami-0912f71e06545ad88
+Resources:
+  SlaveWebServer1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'slavewebserver' ,'1'] ]
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: !Ref KeyName
+  SlaveWebServer2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'slavewebserver' ,'2'] ]
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: !Ref KeyName
+  MasterWebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'masterwebserver'] ]
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: !Ref KeyName
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH to client host. Created using CloudFormation template.
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: cloudsoft-ansible-course-sg
+        - Key: Description
+          Value: Security Group created for SSH and HTTP access to instances.
+Outputs:
+  PublicIpAddressInstance1:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - SlaveWebServer1
+      - PublicIp
+  PublicIpAddressInstance2:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - SlaveWebServer2
+      - PublicIp
+  PublicIpAddressInstance3:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - MasterWebServer
+      - PublicIp
+  

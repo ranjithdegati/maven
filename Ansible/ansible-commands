@@ -1,0 +1,18 @@
+ansible --list-hosts all
+
+
+/etc/ansible/hosts
+
+ansible -i hosts-dev --list-hosts all 
+
+
+ansible -i hosts-dev --list-hosts webservers
+
+ansible --list-hosts "*"
+
+
+ ansible -i hosts-dev --list-hosts \!control
+
+
+ansible -i hosts-dev --list-hosts webservers[0]
+
